@@ -28,4 +28,4 @@ env:
   - secure: Sjc8NESc7vgfHI3IebPVNpKERgqwpgHjiCtG7Xr40GwvMP0UA0DItWIA/a0OTd4bBfcy73AV+guMhtxmrXLdqq+1/6w2HK48GX8raHOK0PUGsIDmoyhg0S94R3mEuk5j4nbGvYRM4MTgN4H6dvBUh62k+o2pWMyF8EbNzzj25k0=
   - secure: CtKuyn4tyBZznZAVaR7SmPb3CPZqJ+gyl2PrfzVobDQq/TdgElGlfCIamQwuKTBE0KWjhtbKlPkwOCEZOBQG8VZFvjqNZ2RT8o/hDuFTWLy/jn7f9H/PgRtOw4eWQHWHqpKrg17Itl1x/RBcOyIBl8h1wTIvox6boDNtNhiMjgE=
   matrix:
-  - KITCHEN_INSTANCE='default-centos-65'
+  - KITCHEN_INSTANCE='tomcat6-centos-65'
