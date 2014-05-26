@@ -10,6 +10,7 @@ before_install:
 - echo `md5sum ~/.ssh/id_do.pem`
 - ls -la ~/.ssh
 script:
+- bundle exec kitchen diagnose --all
 - bundle exec kitchen test $KITCHEN_INSTANCE
 after_script:
 - bundle exec kitchen destroy
