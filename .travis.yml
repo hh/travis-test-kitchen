@@ -12,6 +12,7 @@ script:
 - bundle exec kitchen diagnose --all
 - bundle exec kitchen test $KITCHEN_INSTANCE
 after_script:
+- grep . -Hn .kitchen/logs/*
 - bundle exec kitchen destroy
 env:
   global:
