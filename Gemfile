@@ -35,4 +35,6 @@ group :development do
   gem 'guard-foodcritic'
   gem 'guard-rspec'
   gem 'guard-rubocop'
+  gem 'travis'
+  gem 'knife-digital_ocean'
 end
