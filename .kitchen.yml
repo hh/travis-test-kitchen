@@ -1,6 +1,7 @@
 #driver:
 #  name: vagrant
-driver_plugin: vagrant
+# driver_plugin: vagrant
+# I don't want vagrant
 
 driver_config:
  require_chef_omnibus: true
