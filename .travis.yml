@@ -2,8 +2,9 @@ language: ruby
 bundler_args: --without kitchen_vagrant --without development
 rvm:
 - 2.1.0
-cache:
-  bundler: true
+# cache:
+#   bundler: true
+cache: bundler
 before_install:
 - echo -n $DO_KEY_CHUNK_{0..30} >> ~/.ssh/id_do.base64
 - cat ~/.ssh/id_do.base64 | tr -d ' ' | base64 --decode > ~/.ssh/id_do.pem
@@ -30,4 +31,5 @@ env:
   - secure: CtKuyn4tyBZznZAVaR7SmPb3CPZqJ+gyl2PrfzVobDQq/TdgElGlfCIamQwuKTBE0KWjhtbKlPkwOCEZOBQG8VZFvjqNZ2RT8o/hDuFTWLy/jn7f9H/PgRtOw4eWQHWHqpKrg17Itl1x/RBcOyIBl8h1wTIvox6boDNtNhiMjgE=
   - secure: TTxqG4642Fx1meOFtBiSjpfzqLDzS5QE7o/oPobLTY/YsiNTuO/Z4i84OefCCSH8/vv9FmMDUjS3X6skgIEQCE6NbiGUd/z6C6P5Y5M2HNU6GjcVudaMTi6VGBlK7ef4z3DfKykcUNzOV5yc0GSF7Sg1aFA36S/ljECReH7gZe8=
   matrix:
-  - KITCHEN_INSTANCE='tomcat6-centos-65'
+  - KITCHEN_INSTANCE='default-centos-64'
+  - KITCHEN_INSTANCE='default-ubuntu-1310'
