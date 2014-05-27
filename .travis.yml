@@ -1,14 +1,15 @@
 language: ruby
+cache: bundler
 bundler_args: --without kitchen_vagrant --without development
 rvm:
 - 2.1.0
-cache: bundler
 before_install:
 - echo -n $DO_KEY_CHUNK_{0..999} | tr -d ' ' | base64 --decode > /home/travis/.ssh/id_do.pem
 - echo `md5sum ~/.ssh/id_do.pem`
 - ls -la ~/.ssh
 script:
-- bundle exec kitchen diagnose --all
+# fun but verbose:
+# - bundle exec kitchen diagnose --all
 - bundle exec kitchen test $KITCHEN_INSTANCE
 after_script:
 - grep . -Hn .kitchen/logs/*
