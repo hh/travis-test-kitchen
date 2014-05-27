@@ -13,4 +13,4 @@ export KITCHEN_INSTANCE='default-centos-64'
 ruby -r base64 -e 'Base64.encode64(open("#{ENV["HOME"]}/.ssh/id_do.pem").read).lines.each_with_index{|l,i| cmd = "travis encrypt DO_KEY_CHUNK_#{i}='#{l.chomp}' --add "; puts cmd ; system cmd}'
 travis encrypt DIGITAL_OCEAN_API_KEY=${DIGITAL_OCEAN_API_KEY} --add
 travis encrypt DIGITAL_OCEAN_CLIENT_ID=${DIGITAL_OCEAN_CLIENT_ID} --add
-travis encrypt DIGITAL_OCEAN_SSH_KEY_IDS=${DIGITAL_OCEAN_SSH_KEY_IDS} --add
+# travis encrypt DIGITAL_OCEAN_SSH_KEY_IDS=${DIGITAL_OCEAN_SSH_KEY_IDS} --add

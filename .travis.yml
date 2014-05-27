@@ -4,8 +4,7 @@ rvm:
 - 2.1.0
 cache: bundler
 before_install:
-- echo -n $DO_KEY_CHUNK_{0..999} >> ~/.ssh/id_do.base64
-- cat ~/.ssh/id_do.base64 | tr -d ' ' | base64 --decode > ~/.ssh/id_do.pem
+- echo -n $DO_KEY_CHUNK_{0..999} | tr -d ' ' | base64 --decode > /home/travis/.ssh/id_do.pem
 - echo `md5sum ~/.ssh/id_do.pem`
 - ls -la ~/.ssh
 script:
@@ -17,7 +16,8 @@ after_script:
 env:
   global:
   - KITCHEN_YAML='.kitchen.cloud.yml'
-  - DIGITAL_OCEAN_SSH_KEY_PATH='~/.ssh/id_do.pem'
+  - KITCHEN_LOG=DEBUG
+  - DIGITAL_OCEAN_SSH_KEY_PATH='/home/travis/.ssh/id_do.pem'
   - DIGITAL_OCEAN_SSH_KEY_IDS='135373, 135365'
   - secure: kb7kk/1eobLPM4/gI7pGmAaWfglDo0xrkKAXbaS5cFdYIon2PMBSgnk821DNnkh7kW9ERUTUNEdyqDDAG3EUj+h7CPHSQEOQmRRp6v6UsKqcTb8pV0q8zNhnFDjNP5DkQ7lLST2OghLd9evsnlqUtFEfUfMx4Cvp1KKnXYPkrTQ=
   - secure: DozWXmEPFHFKxzwtwuYLL7VK3lI2XjGjTGdQ+S5vq+d6SEcVlGMxkyU+fmAfC75QaA9HU17fwsY/g+cHmP1X3OE5SuRYLAmLUKx9Dzm7F4uIwfZ7lMn9A8OmQP6spkLzaU7oLolpdQQ3DrzcCefpM7lOh8z4ghL+ha/XCeix1JM=
