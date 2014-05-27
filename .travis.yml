@@ -16,7 +16,6 @@ after_script:
 env:
   global:
   - KITCHEN_YAML='.kitchen.cloud.yml'
-  - KITCHEN_LOG=DEBUG
   - DIGITAL_OCEAN_SSH_KEY_PATH='/home/travis/.ssh/id_do.pem'
   - DIGITAL_OCEAN_SSH_KEY_IDS='135373, 135365'
   - secure: R8Pgqot29GRV1BBuycbs4wWdnrZQGo3aIAGlDRLOAmIipQFAgp4/+exqHtlwOqgUMTTR0Ib3o6qrEia43Re/GcieOy1xi7x5MRhi+gMqEWRA/QNQhO5x39bNITG8/zrjTWA4QB1pgymmxDhAjGzSKYT7FuxnTpGw9KuwqM+h+AI=
