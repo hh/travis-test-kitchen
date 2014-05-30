@@ -10,10 +10,12 @@ before_install:
 script:
 # fun but verbose:
 # - bundle exec kitchen diagnose --all
+- bundle exec rake style:chef
+- bundle exec rake style:ruby
 - bundle exec kitchen test $KITCHEN_INSTANCE
 after_script:
 - grep . -Hn .kitchen/logs/*
-- bundle exec kitchen destroy
+# - bundle exec kitchen destroy
 env:
   global:
   - KITCHEN_YAML='.kitchen.cloud.yml'

@@ -12,7 +12,7 @@ driver_config:
 
 provisioner:
   name: chef_zero
-  require_chef_omnibus: latest
+  # require_chef_omnibus: latest
 
 platforms:
 - name: centos-6.4
@@ -79,14 +79,14 @@ platforms:
 suites:
 - name: default
   run_list:
-  - recipe[tomcat::default]
-  attributes: {java: {accept_license_agreement: true}}
+  - recipe[lunchies::default]
+#  attributes: {java: {accept_license_agreement: true}}
 
-- name: tomcat7
-  run_list: ["recipe[tomcat]"]
-  excludes: ["ubuntu-10.04", "centos-6.4"]
-  attributes:
-    java:
-      accept_license_agreement: true
-    tomcat: 
-      base_version: 7
+#- name: tomcat7
+#  run_list: ["recipe[tomcat]"]
+  # excludes: ["ubuntu-10.04", "centos-6.4"]
+  # attributes:
+  #   java:
+  #     accept_license_agreement: true
+  #   tomcat: 
+  #     base_version: 7

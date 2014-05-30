@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: tomcat
+# Cookbook Name:: lunchies
 # Recipe:: default
 #
-# Copyright 2010, Opscode, Inc.
+# Copyright 2014, Vulk.io
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,185 +17,113 @@
 # limitations under the License.
 #
 
-# required for the secure_password method from the openssl cookbook
-::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
+package 'git'
+# package 'ruby'
+# package 'rubygems'
+#gem 'bundler'
 
-include_recipe 'java'
 
-tomcat_pkgs = value_for_platform(
-  ['smartos'] => {
-    'default' => ['apache-tomcat'],
-  },
-  'default' => ["tomcat#{node['tomcat']['base_version']}"],
-  )
-if node['tomcat']['deploy_manager_apps']
-  tomcat_pkgs << value_for_platform(
-    %w{ debian  ubuntu } => {
-      'default' => "tomcat#{node['tomcat']['base_version']}-admin",
-    },    
-    %w{ centos redhat fedora amazon scientific oracle } => {
-      'default' => "tomcat#{node['tomcat']['base_version']}-admin-webapps",
-    },
-    )
+
+user node[:lunchies][:user]
+
+directory "/home/#{node[:lunchies][:user]}/.ssh" do
+  mode '0700'
+  owner node[:lunchies][:user]
 end
 
-tomcat_pkgs.compact!
-
-tomcat_pkgs.each do |pkg|
-  package pkg do
-    action :install
-    version node['tomcat']['base_version'].to_s if platform_family?('smartos')
-  end
+file "/home/#{node[:lunchies][:user]}/.ssh/known_hosts" do
+  user node[:lunchies][:user]
+  content <<EOF
+github.com,192.30.252.128 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+bitbucket.org,131.103.20.168 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
+EOF
 end
 
-directory node['tomcat']['endorsed_dir'] do
-  mode '0755'
+# include_recipe 'ruby_build' # ensure ruby_build is installed
+
+# global
+# ruby_build_ruby node[:lunchies][:ruby_version] # builds our version
+# rbenv_gem 'rake' do
+#   ruby_version node[:lunchies][:ruby_version]
+# end
+
+# rbenv_rehash 'doing the rehash dance'
+# node.default['rbenv']['rubies'] = [node[:lunchies][:ruby_version],]
+# node.default['rbenv']['user_rubies'] = [node[:lunchies][:ruby_version],]
+# node.default['rbenv']['gems'] = {
+#  node[:lunchies][:ruby_version] => [
+#    { 'name' => 'bundler' },
+#    { 'name' => 'rake' },
+#  ]
+# }
+# per user
+node.default['rvm']['user_installs'] = [{
+  'user' => node[:lunchies][:user],
+  'rubies' => [node[:lunchies][:ruby_version],],
+#  'upgrade' => true,
+  'default_ruby' => node[:lunchies][:ruby_version],
+#  'global' => node[:lunchies][:ruby_version],
+  'global_gems' => [
+     { 'name' => 'bundler' },
+     { 'name' => 'rake' },
+   ],
+}]
+
+include_recipe 'yum-epel::default'
+include_recipe 'rvm::user'
+# include_recipe 'rbenv::user_install'
+# rbenv_gem 'bundler' do
+#   ruby_version node[:lunchies][:ruby_version]
+# end
+# include_recipe 'rbenv::user'
+# include_recipe 'rbenv::system_install'
+# rbenv_global node[:lunchies][:ruby_version] do
+#   user node[:lunchies][:user]
+# end
+
+# link "/home/#{node[:lunchies][:user]}/.rbenv/versions/#{node[:lunchies][:ruby_version]}" do
+#   to "/usr/local/ruby/#{node[:lunchies][:ruby_version]}"
+# end
+
+
+# rvm
+directory node[:lunchies][:path] do
+  user node[:lunchies][:user]
   recursive true
 end
 
-unless node['tomcat']['deploy_manager_apps']
-  directory "#{node['tomcat']['webapp_dir']}/manager" do
-    action :delete
-    recursive true
-  end
-  file "#{node['tomcat']['config_dir']}/Catalina/localhost/manager.xml" do
-    action :delete
-  end
-  directory "#{node['tomcat']['webapp_dir']}/host-manager" do
-    action :delete
-    recursive true
-  end
-  file "#{node['tomcat']['config_dir']}/Catalina/localhost/host-manager.xml" do
-    action :delete
-  end
+git node[:lunchies][:path] do
+  repository node[:lunchies][:git_repository]
+  revision node[:lunchies][:git_revision]
+  enable_submodules true
+  action :sync
+  user node[:lunchies][:user]
+  #  notifies :run, 'rbenv_script[setup lunchies]' # update me
+  #  notifies :run, 'bash[compile_lunchies]' # update me
+  notifies :run, 'rvm_shell[bake some lunch]' # update me
 end
 
-node.set_unless['tomcat']['keystore_password'] = secure_password
-node.set_unless['tomcat']['truststore_password'] = secure_password
+# bash 'compile_lunchies' do
+#   cwd node[:lunchies][:path]
+#   user node[:lunchies][:user]
+#   code <<-EOB
+#   bundle install
+#   bundle exec ruby server.rb
+#   EOB
+# end
 
-unless node['tomcat']['truststore_file'].nil?
-  java_options = node['tomcat']['java_options'].to_s
-  java_options << " -Djavax.net.ssl.trustStore=#{node['tomcat']['config_dir']}/#{node['tomcat']['truststore_file']}"
-  java_options << " -Djavax.net.ssl.trustStorePassword=#{node['tomcat']['truststore_password']}"
-
-  node.default['tomcat']['java_options'] = java_options
+rvm_shell 'bake some lunch' do
+  cwd node[:lunchies][:path]
+  user node[:lunchies][:user]
+  code <<-EOF
+  bundle install
+  rake test
+EOF
 end
-
-case node['platform']
-when 'centos', 'redhat', 'fedora', 'amazon', 'oracle'
-  template "/etc/sysconfig/tomcat#{node['tomcat']['base_version']}" do
-    source 'sysconfig_tomcat6.erb'
-    owner 'root'
-    group 'root'
-    mode '0644'
-    notifies :restart, 'service[tomcat]'
-  end
-when 'smartos'
-  template "#{node['tomcat']['base']}/bin/setenv.sh" do
-    source 'setenv.sh.erb'
-    owner 'root'
-    group 'root'
-    mode '0644'
-    notifies :restart, 'service[tomcat]'
-  end
-else
-  template "/etc/default/tomcat#{node['tomcat']['base_version']}" do
-    source 'default_tomcat6.erb'
-    owner 'root'
-    group 'root'
-    mode '0644'
-    notifies :restart, 'service[tomcat]'
-  end
-end
-
-template "#{node['tomcat']['config_dir']}/server.xml" do
-  source 'server.xml.erb'
-  owner 'root'
-  group 'root'
-  mode '0644'
-  notifies :restart, 'service[tomcat]'
-end
-
-template "#{node['tomcat']['config_dir']}/logging.properties" do
-  source 'logging.properties.erb'
-  owner 'root'
-  group 'root'
-  mode '0644'
-  notifies :restart, 'service[tomcat]'
-end
-
-if node['tomcat']['ssl_cert_file'].nil?
-  execute 'Create Tomcat SSL certificate' do
-    group node['tomcat']['group']
-    command "#{node['tomcat']['keytool']} -genkey -keystore \"#{node['tomcat']['config_dir']}/#{node['tomcat']['keystore_file']}\" -storepass \"#{node['tomcat']['keystore_password']}\" -keypass \"#{node['tomcat']['keystore_password']}\" -dname \"#{node['tomcat']['certificate_dn']}\""
-    umask 0007
-    creates "#{node['tomcat']['config_dir']}/#{node['tomcat']['keystore_file']}"
-    action :run
-    notifies :restart, 'service[tomcat]'
-  end
-else
-  script 'create_tomcat_keystore' do
-    interpreter 'bash'
-    action :nothing
-    cwd node['tomcat']['config_dir']
-    code <<-EOH
-      cat #{node['tomcat']['ssl_chain_files'].join(' ')} > cacerts.pem
-      openssl pkcs12 -export \
-       -inkey #{node['tomcat']['ssl_key_file']} \
-       -in #{node['tomcat']['ssl_cert_file']} \
-       -chain \
-       -CAfile cacerts.pem \
-       -password pass:#{node['tomcat']['keystore_password']} \
-       -out #{node['tomcat']['keystore_file']}
-    EOH
-    notifies :restart, 'service[tomcat]'
-  end
-
-  cookbook_file "#{node['tomcat']['config_dir']}/#{node['tomcat']['ssl_cert_file']}" do
-    mode '0644'
-    notifies :run, 'script[create_tomcat_keystore]'
-  end
-
-  cookbook_file "#{node['tomcat']['config_dir']}/#{node['tomcat']['ssl_key_file']}" do
-    mode '0644'
-    notifies :run, 'script[create_tomcat_keystore]'
-  end
-
-  node['tomcat']['ssl_chain_files'].each do |cert|
-    cookbook_file "#{node['tomcat']['config_dir']}/#{cert}" do
-      mode '0644'
-      notifies :run, 'script[create_tomcat_keystore]'
-    end
-  end
-end
-
-unless node['tomcat']['truststore_file'].nil?
-  cookbook_file "#{node['tomcat']['config_dir']}/#{node['tomcat']['truststore_file']}" do
-    mode '0644'
-  end
-end
-
-service 'tomcat' do
-  case node['platform']
-  when 'centos', 'redhat', 'fedora', 'amazon'
-    service_name "tomcat#{node['tomcat']['base_version']}"
-    supports :restart => true, :status => true
-  when 'debian', 'ubuntu'
-    service_name "tomcat#{node['tomcat']['base_version']}"
-    supports :restart => true, :reload => false, :status => true
-  when 'smartos'
-    service_name 'tomcat'
-    supports :restart => false, :reload => false, :status => true
-  else
-    service_name "tomcat#{node['tomcat']['base_version']}"
-  end
-  action [:start, :enable]
-  notifies :run, 'execute[wait for tomcat]', :immediately
-  retries 4
-  retry_delay 30
-end
-
-execute 'wait for tomcat' do
-  command 'sleep 5'
-  action :nothing
-end
+# rbenv_script 'setup lunchies' do
+#   ruby_version node[:lunchies][:ruby_version]
+#   cwd node[:lunchies][:path]
+#   user node[:lunchies][:user]
+#   # group         "deploy"
+#   code          %{bundle install --path vendor/gems}
+# end

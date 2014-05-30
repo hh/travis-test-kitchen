@@ -1,5 +1,5 @@
 AllCops:
-  Excludes:
+  Exclude:
     - vendor/**
 
 ClassLength:
@@ -15,8 +15,8 @@ MethodLength:
 TrailingComma:
   EnforcedStyleForMultiline: comma
 
-HashSyntax:
-  EnforcedStyle: hash_rockets
+#HashSyntax:
+#  EnforcedStyle: hash_rockets
 
 AlignParameters:
   Enabled: false
@@ -25,4 +25,7 @@ CyclomaticComplexity:
   Enabled: false
 
 BlockAlignment:
+  Enabled: false
+
+SingleSpaceBeforeFirstArg:
   Enabled: false
